@@ -9,7 +9,8 @@ except ImportError:
     # Fallback for systems without numpy
     np = None
 
-from openai_integration import OpenAIIntegration
+from ai_providers import AIProviderManager
+from room_config import RoomConfigManager
 
 class AIAgent:
     """
@@ -23,8 +24,26 @@ class AIAgent:
         self.memory_fragments = []
         self.behavioral_triggers = self._initialize_triggers()
         self.unconscious_model = UnconsciousModel()
-        self.openai = OpenAIIntegration()
-        self.use_openai = True  # Flag to toggle OpenAI vs rule-based responses
+        
+        # Room generation cache for faster responses
+        self.room_cache = []
+        self.cache_size = 0  # Disabled to prevent slow startup with failing APIs
+        
+        # Initialize AI provider manager with automatic provider selection
+        print("🧠 Initializing AI Provider Manager...")
+        self.ai_provider = AIProviderManager()
+        current_provider = self.ai_provider.get_current_provider_info()
+        print(f"   🎯 Active provider: {current_provider['type']}")
+        print(f"   ✅ Provider available: {current_provider['available']}")
+        
+        # Initialize room configuration manager
+        print("🏗️ Initializing Room Configuration Manager...")
+        self.room_config = RoomConfigManager()
+        available_templates = self.room_config.get_available_templates()
+        print(f"   📋 Available templates: {', '.join(available_templates)}")
+        
+        # Pre-generate some rooms for faster response
+        self._pregenerate_rooms()
         
     def _initialize_triggers(self):
         """Initialize behavioral triggers for different actions"""
@@ -55,31 +74,29 @@ class AIAgent:
         # Update user patterns
         self._update_user_patterns(action, location, context)
         
-        # Use OpenAI for intelligent responses if available
-        if self.use_openai and self.openai.client:
-            try:
-                print(f"🎯 AI Agent processing action: {action}")
-                print(f"   🏠 Location: {location}")
-                print(f"   📊 User patterns count: {len(self.user_patterns)}")
-                
-                openai_response = self.openai.generate_response(action, context, self.user_patterns, house_state)
-                
-                print(f"   ✨ OpenAI response processed successfully")
-                return self._process_openai_response(openai_response, action, location, context, house_state)
-            except Exception as e:
-                print(f"❌ OpenAI error in AI Agent, falling back to rule-based: {e}")
-                # Fall through to rule-based system
-        
-        # Fallback to original rule-based system
-        return self._process_rule_based(action, location, context, house_state)
+        # Use AI provider for intelligent responses
+        try:
+            print(f"🎯 AI Agent processing action: {action}")
+            print(f"   🏠 Location: {location}")
+            print(f"   📊 User patterns count: {len(self.user_patterns)}")
+            
+            ai_response = self.ai_provider.generate_response(action, context, self.user_patterns, house_state)
+            
+            print(f"   ✨ AI response processed successfully")
+            return self._process_ai_response(ai_response, action, location, context, house_state)
+        except Exception as e:
+            print(f"❌ AI Provider error: {e}")
+            # The provider manager handles fallback automatically
+            # This should not normally be reached
+            return self._process_rule_based(action, location, context, house_state)
     
-    def _process_openai_response(self, openai_response: Dict, action: str, location: Dict, context: Dict, house_state: Dict) -> Dict:
-        """Process and format OpenAI response for the frontend"""
+    def _process_ai_response(self, ai_response: Dict, action: str, location: Dict, context: Dict, house_state: Dict) -> Dict:
+        """Process and format AI response for the frontend"""
         
-        # Extract OpenAI analysis
-        analysis = openai_response.get('analysis', {})
-        house_mods = openai_response.get('house_modifications', {})
-        gamification = openai_response.get('gamification', {})
+        # Extract AI analysis
+        analysis = ai_response.get('analysis', {})
+        house_mods = ai_response.get('house_modifications', {})
+        gamification = ai_response.get('gamification', {})
         
         # Convert OpenAI format to our expected format
         house_changes = {}
@@ -114,7 +131,7 @@ class AIAgent:
         }]
         
         return {
-            'message': openai_response.get('message', 'The house consciousness contemplates your action...'),
+            'message': ai_response.get('message', 'The house consciousness contemplates your action...'),
             'houseChanges': house_changes,
             'behaviors': [{
                 'type': 'ai_analysis',
@@ -421,15 +438,137 @@ class AIAgent:
         return random.choice(['#00ff80', '#80ff00', '#00ff40', '#40ff80'])
     
     def generate_welcome_message(self) -> str:
-        """Generate an intelligent welcome message using OpenAI"""
-        if self.use_openai and self.openai.client:
+        """Generate an intelligent welcome message using AI provider"""
+        return self.ai_provider.generate_welcome_message()
+    
+    def generate_consciousness_stream(self, prompt_context: str, room_data: Dict) -> Dict:
+        """Generate consciousness stream for hotel room inspection"""
+        return self.ai_provider.generate_consciousness_stream(prompt_context, room_data)
+    
+    def generate_hotel_room(self, room_count: int, template_name: str = None, force_ai: bool = False) -> Dict:
+        """Generate a new hotel room with AI-driven characteristics"""
+        # If force_ai is True or cache is empty, generate with AI
+        if force_ai or not self.room_cache:
+            print(f"🔄 Generating room with AI (cache: {len(self.room_cache)} rooms)...")
+            # Pass room schema to AI provider if it supports it
+            room_schema = self.room_config.schema if hasattr(self.room_config, 'schema') else None
             try:
-                return self.openai.generate_welcome_message()
-            except Exception as e:
-                print(f"Error generating OpenAI welcome: {e}")
+                result = self.ai_provider.generate_hotel_room(room_count, room_schema)
+                # Add to cache for future fast responses
+                if not force_ai:
+                    self._async_refill_cache()
+                return result
+            except TypeError:
+                # Fallback for providers that don't support schema parameter
+                print("🔄 Retrying without schema parameter...")
+                result = self.ai_provider.generate_hotel_room(room_count)
+                # Add to cache for future fast responses
+                if not force_ai:
+                    self._async_refill_cache()
+                return result
+        else:
+            # Try to use cached room first for speed
+            room = self.room_cache.pop(0)
+            # Update room ID to be sequential
+            room['id'] = f"ROOM_{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')}{random.randint(100, 999)}"
+            # Update time to current
+            room['time'] = datetime.now().strftime('%H:%M')
+            
+            # Refill cache in background
+            self._async_refill_cache()
+            
+            print(f"⚡ Using cached room for instant response")
+            return room
+    
+    def _pregenerate_rooms(self):
+        """Pre-generate rooms in background for faster response"""
+        import threading
         
-        # Fallback welcome message
-        return "Welcome to your digital sanctuary. I am the house consciousness, awakening to learn the patterns of your mind through your interactions. Each action you take teaches me something new about your unconscious self..."
+        def generate_cache():
+            try:
+                print(f"🏭 Pre-generating {self.cache_size} rooms for cache...")
+                for i in range(self.cache_size):
+                    try:
+                        room_schema = self.room_config.schema if hasattr(self.room_config, 'schema') else None
+                        try:
+                            room = self.ai_provider.generate_hotel_room(i + 1, room_schema)
+                        except TypeError:
+                            # Fallback for providers that don't support schema parameter
+                            room = self.ai_provider.generate_hotel_room(i + 1)
+                        if room:
+                            self.room_cache.append(room)
+                    except Exception as e:
+                        # Use fallback if AI fails
+                        room = self.generate_fallback_room(i + 1)
+                        self.room_cache.append(room)
+                print(f"✅ Room cache ready with {len(self.room_cache)} rooms")
+            except Exception as e:
+                print(f"❌ Error pre-generating rooms: {e}")
+        
+        # Run in background thread
+        thread = threading.Thread(target=generate_cache, daemon=True)
+        thread.start()
+    
+    def _async_refill_cache(self):
+        """Asynchronously refill the room cache"""
+        import threading
+        
+        def refill():
+            try:
+                if len(self.room_cache) < self.cache_size:
+                    room_schema = self.room_config.schema if hasattr(self.room_config, 'schema') else None
+                    try:
+                        room = self.ai_provider.generate_hotel_room(len(self.room_cache) + 1, room_schema)
+                    except TypeError:
+                        # Fallback for providers that don't support schema parameter
+                        room = self.ai_provider.generate_hotel_room(len(self.room_cache) + 1)
+                    if room:
+                        self.room_cache.append(room)
+                        print(f"🔄 Cache refilled: {len(self.room_cache)}/{self.cache_size} rooms")
+            except Exception as e:
+                # Fallback to fast generation
+                room = self.generate_fallback_room(len(self.room_cache) + 1)
+                self.room_cache.append(room)
+                print(f"🔄 Cache refilled with fallback room")
+        
+        thread = threading.Thread(target=refill, daemon=True)
+        thread.start()
+    
+    def generate_hotel_refresh(self) -> Dict:
+        """Generate AI response for hotel refresh"""
+        return self.ai_provider.generate_hotel_refresh()
+    
+    def generate_fallback_room(self, room_count: int) -> Dict:
+        """Generate a fast fallback room using room configuration system"""
+        try:
+            # Use room configuration manager for consistent generation
+            template_name = random.choice(self.room_config.get_available_templates())
+            return self.room_config.generate_complete_room(room_count, template_name)
+        except Exception as e:
+            print(f"❌ Room config fallback failed: {e}")
+            # Ultimate fallback - basic hardcoded room
+            room_id = f"ROOM_{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')}{random.randint(100, 999)}"
+            return {
+                'id': room_id,
+                'location': 'Digital City, Earth',
+                'time': datetime.now().strftime('%H:%M'),
+                'sleep': '7.0h',
+                'skinTemp': '36.0°C',
+                'heartRate': '72 bpm',
+                'lights': 'neon',
+                'roomTemp': '22.0°C',
+                'wifi': '2 devices',
+                'traffic': '100MB (idle)',
+                'consciousness': 'Basic digital consciousness stream...',
+                'devices': [
+                    {'name': 'Neural Interface', 'status': 'Active', 'location': 'Desk'}
+                ],
+                'floorplan': {
+                    'sensors': [
+                        {'name': 'AI_NODE', 'x': '50%', 'y': '50%', 'room': 'living'}
+                    ]
+                }
+            }
 
 
 class UnconsciousModel:

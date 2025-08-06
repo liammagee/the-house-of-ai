@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Hotel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #c0c0c0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .terminal {
+            height: 100vh;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .hotel-title {
+            color: #00ff41;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .status-line {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .room {
+            border: 1px solid #333;
+            padding: 10px;
+            background: #111;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .room:hover {
+            border-color: #00ff41;
+        }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #222;
+        }
+
+        .room-id {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .room-location {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .data-streams {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .data-item {
+            padding: 3px 5px;
+            background: #0a0a0a;
+            border-left: 2px solid #333;
+        }
+
+        .data-label {
+            color: #666;
+        }
+
+        .data-value {
+            color: #ccc;
+            margin-left: 5px;
+        }
+
+        .consciousness-stream {
+            background: #0f0f0f;
+            padding: 8px;
+            border-left: 2px solid #00ff41;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #aaa;
+            max-height: 120px;
+            overflow-y: auto;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            height: 70vh;
+            background: #111;
+            border: 1px solid #00ff41;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #00ff41;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .room-map {
+            margin-top: 20px;
+        }
+
+        .map-title {
+            color: #00ff41;
+            margin-bottom: 15px;
+        }
+
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .device {
+            padding: 8px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+        }
+
+        .device-name {
+            color: #00ff41;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .device-status {
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .floorplan {
+            margin-top: 20px;
+            border: 1px solid #333;
+            background: #0a0a0a;
+            padding: 15px;
+            position: relative;
+        }
+
+        .floorplan-title {
+            color: #00ff41;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+
+        .room-layout {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border: 2px solid #333;
+            background: #111;
+            margin-bottom: 15px;
+        }
+
+        .room-section {
+            position: absolute;
+            border: 1px dashed #444;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .room-section.bedroom {
+            top: 10px;
+            left: 10px;
+            width: 45%;
+            height: 60%;
+        }
+
+        .room-section.living {
+            top: 10px;
+            right: 10px;
+            width: 45%;
+            height: 60%;
+        }
+
+        .room-section.kitchen {
+            bottom: 10px;
+            left: 10px;
+            width: 45%;
+            height: 30%;
+        }
+
+        .room-section.bathroom {
+            bottom: 10px;
+            right: 10px;
+            width: 45%;
+            height: 30%;
+        }
+
+        .room-section-label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            color: #666;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .sensor-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00ff41;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sensor-dot:hover {
+            background: #00ff00;
+            transform: scale(1.5);
+        }
+
+        .sensor-dot::after {
+            content: attr(data-sensor);
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #00ff41;
+            padding: 2px 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            border: 1px solid #333;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .sensor-dot:hover::after {
+            opacity: 1;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            font-size: 11px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 6px;
+            height: 6px;
+            background: #00ff41;
+            border-radius: 50%;
+        }
+
+        .blinking {
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .footer {
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .your-room {
+            border-color: #00ff41;
+            background: #0d1a0d;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="header">
+            <div class="hotel-title">VIRTUAL HOTEL NETWORK v2.3.7</div>
+            <div class="status-line">
+                Connected | Occupancy: 47 rooms | Bandwidth: 2.3TB/hr | Uptime: 72d 14h 23m
+            </div>
+        </div>
+
+        <div class="rooms-grid" id="roomsGrid">
+            <!-- Rooms will be populated by JavaScript -->
+        </div>
+
+        <div class="footer">
+            [TAB] Navigate | [ENTER] Inspect Room | [ESC] Main View | [Q] Checkout
+        </div>
+    </div>
+
+    <div class="modal" id="roomModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">[X]</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const rooms = [
+            {
+                id: "ROOM_7A2F",
+                location: "Tokyo, Japan",
+                time: "03:47",
+                sleep: "6.2h",
+                skinTemp: "33.1°C",
+                heartRate: "72 bpm",
+                lights: "desk_lamp",
+                roomTemp: "21.5°C",
+                wifi: "2 devices",
+                traffic: "147MB (streaming)",
+                consciousness: "The blue light flickers against tired eyes. Coffee grows cold on the desk while code compiles in the background. Outside, the city hums its midnight frequency. Focus wavers between debugging and dreams of electric sheep. The cursor blinks in rhythm with a restless heart, marking time in an endless digital night. Sleep calls softly from the bed, but the pull of creation is stronger.",
+                devices: [
+                    { name: "Desk Lamp", status: "ON - 45% brightness", location: "NE corner" },
+                    { name: "Temperature Sensor", status: "21.5°C stable", location: "Center wall" },
+                    { name: "Heart Rate Monitor", status: "72 bpm resting", location: "Wrist device" },
+                    { name: "Sleep Tracker", status: "6.2h previous night", location: "Bedside" },
+                    { name: "WiFi Router", status: "2 connected devices", location: "SW corner" },
+                    { name: "Network Monitor", status: "147MB streaming data", location: "Virtual" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "DESK_LAMP", x: "75%", y: "25%", room: "living" },
+                        { name: "TEMP_CTRL", x: "50%", y: "50%", room: "bedroom" },
+                        { name: "SLEEP_TRACK", x: "25%", y: "30%", room: "bedroom" },
+                        { name: "WIFI_HUB", x: "85%", y: "70%", room: "living" },
+                        { name: "MOTION_DET", x: "70%", y: "85%", room: "bathroom" },
+                        { name: "LIGHT_SENS", x: "90%", y: "40%", room: "living" }
+                    ]
+                }
+            },
+            {
+                id: "ROOM_B84C",
+                location: "Brooklyn, USA",
+                time: "21:47",
+                sleep: "4.1h",
+                skinTemp: "34.7°C",
+                heartRate: "89 bpm",
+                lights: "overhead, kitchen",
+                roomTemp: "19.8°C",
+                wifi: "4 devices",
+                traffic: "89MB (social)",
+                consciousness: "Anxiety buzzes like fluorescent lights overhead. The kitchen timer counts down to something forgotten. Notifications cascade across multiple screens, each demanding attention, fracturing focus into scattered pixels. Heart races with urban electricity. The radiator clanks irregular rhythms while thoughts spiral between deadlines and dinner plans. Home feels like a waiting room.",
+                devices: [
+                    { name: "Overhead Light", status: "ON - 100% brightness", location: "Ceiling center" },
+                    { name: "Kitchen Light", status: "ON - 75% brightness", location: "Kitchen area" },
+                    { name: "Thermostat", status: "19.8°C heating mode", location: "Hallway" },
+                    { name: "Fitness Tracker", status: "89 bpm elevated", location: "Wrist device" },
+                    { name: "Sleep Monitor", status: "4.1h interrupted sleep", location: "Bed frame" },
+                    { name: "Smart Hub", status: "4 devices connected", location: "Living room" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "CEILING_LIGHT", x: "75%", y: "45%", room: "living" },
+                        { name: "KITCHEN_LIGHT", x: "30%", y: "85%", room: "kitchen" },
+                        { name: "THERMOSTAT", x: "50%", y: "5%", room: "bedroom" },
+                        { name: "SLEEP_MON", x: "20%", y: "35%", room: "bedroom" },
+                        { name: "SMART_HUB", x: "80%", y: "60%", room: "living" },
+                        { name: "MOTION_SENS", x: "75%", y: "90%", room: "bathroom" }
+                    ]
+                }
+            },
+            {
+                id: "ROOM_X7J9",
+                location: "Melbourne, Australia",
+                time: "12:47",
+                sleep: "8.3h",
+                skinTemp: "32.6°C",
+                heartRate: "61 bpm",
+                lights: "none",
+                roomTemp: "24.1°C",
+                wifi: "1 device",
+                traffic: "23MB (browsing)",
+                consciousness: "Sunlight streams through gauze curtains, painting geometric shadows on wooden floors. The morning stretches languid and unhurried. Coffee steams beside an open book, words dissolving into daydreams. The garden outside whispers of spring growth and renewal. Heart beats steady and content, synchronized with the distant rhythm of trams. Peace settles like dust motes in golden air.",
+                devices: [
+                    { name: "Light Sensor", status: "Natural light detected", location: "Window" },
+                    { name: "Climate Control", status: "24.1°C optimal", location: "Wall unit" },
+                    { name: "Health Monitor", status: "61 bpm resting", location: "Smartwatch" },
+                    { name: "Sleep Tracker", status: "8.3h quality sleep", location: "Mattress sensor" },
+                    { name: "WiFi Device", status: "1 tablet connected", location: "Reading nook" },
+                    { name: "Traffic Monitor", status: "23MB light browsing", location: "Network layer" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "LIGHT_SENS", x: "90%", y: "20%", room: "living" },
+                        { name: "CLIMATE_CTRL", x: "10%", y: "50%", room: "bedroom" },
+                        { name: "SLEEP_TRACK", x: "30%", y: "40%", room: "bedroom" },
+                        { name: "TABLET_DOCK", x: "85%", y: "55%", room: "living" },
+                        { name: "TEMP_SENS", x: "50%", y: "80%", room: "kitchen" },
+                        { name: "AIR_QUAL", x: "60%", y: "85%", room: "bathroom" }
+                    ]
+                }
+            },
+            {
+                id: "ROOM_K2M8",
+                location: "Berlin, Germany",
+                time: "02:47",
+                sleep: "5.7h",
+                skinTemp: "33.8°C",
+                heartRate: "78 bpm",
+                lights: "bedside",
+                roomTemp: "18.2°C",
+                wifi: "3 devices",
+                traffic: "312MB (gaming)",
+                consciousness: "The digital battlefield glows in peripheral vision while consciousness drifts between virtual worlds and physical fatigue. Controller warm in sweaty palms, heart synced to action sequences. The radiator ticks its mechanical metronome against the cold night. Reality blurs at the edges where screen light meets darkness. Victory and defeat cycle in endless loops, each match a small death and rebirth.",
+                devices: [
+                    { name: "Bedside Lamp", status: "ON - dim setting", location: "Bedside table" },
+                    { name: "Gaming Setup", status: "Active - 312MB traffic", location: "Desk area" },
+                    { name: "Heating System", status: "18.2°C night mode", location: "Radiator" },
+                    { name: "Biometric Sensor", status: "78 bpm gaming stress", location: "Chair sensor" },
+                    { name: "Sleep Tracker", status: "5.7h fragmented", location: "Pillow sensor" },
+                    { name: "Network Hub", status: "3 gaming devices", location: "Entertainment center" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "BEDSIDE_LAMP", x: "35%", y: "25%", room: "bedroom" },
+                        { name: "GAMING_RIG", x: "80%", y: "35%", room: "living" },
+                        { name: "RADIATOR", x: "5%", y: "70%", room: "bedroom" },
+                        { name: "CHAIR_SENS", x: "75%", y: "40%", room: "living" },
+                        { name: "PILLOW_TRACK", x: "25%", y: "30%", room: "bedroom" },
+                        { name: "NET_HUB", x: "85%", y: "75%", room: "living" }
+                    ]
+                }
+            },
+            {
+                id: "ROOM_P3V1",
+                location: "São Paulo, Brazil",
+                time: "22:47",
+                sleep: "7.8h",
+                skinTemp: "35.2°C",
+                heartRate: "65 bpm",
+                lights: "ambient, bathroom",
+                roomTemp: "26.7°C",
+                wifi: "2 devices",
+                traffic: "67MB (video)",
+                consciousness: "Warm air carries the scent of jasmine through open windows. The city's nocturnal symphony builds outside - distant music, conversations, the eternal dance of urban life. Skin glistens with evening heat as ceiling fans stir memories and humidity in equal measure. The bathroom light creates a pool of privacy in the apartment's flowing spaces. Heart beats with the rhythm of samba, even in stillness.",
+                devices: [
+                    { name: "Ambient Lighting", status: "ON - warm tone", location: "Living area" },
+                    { name: "Bathroom Light", status: "ON - motion activated", location: "Bathroom" },
+                    { name: "Ceiling Fan", status: "Speed 2 - cooling", location: "Bedroom ceiling" },
+                    { name: "Health Monitor", status: "65 bpm relaxed", location: "Smart ring" },
+                    { name: "Sleep Quality", status: "7.8h deep sleep", location: "Bed sensors" },
+                    { name: "Streaming Device", status: "67MB video content", location: "TV area" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "AMBIENT_LED", x: "70%", y: "50%", room: "living" },
+                        { name: "BATH_LIGHT", x: "80%", y: "85%", room: "bathroom" },
+                        { name: "CEILING_FAN", x: "25%", y: "35%", room: "bedroom" },
+                        { name: "SLEEP_SENS", x: "20%", y: "25%", room: "bedroom" },
+                        { name: "STREAM_BOX", x: "85%", y: "60%", room: "living" },
+                        { name: "HUMID_SENS", x: "50%", y: "90%", room: "kitchen" }
+                    ]
+                }
+            },
+            {
+                id: "ROOM_Y9K4",
+                location: "London, UK",
+                time: "01:47",
+                sleep: "6.9h",
+                skinTemp: "32.3°C",
+                heartRate: "69 bpm",
+                lights: "reading",
+                roomTemp: "17.1°C",
+                wifi: "2 devices",
+                traffic: "45MB (reading)",
+                consciousness: "Pages turn with whispered promises in the amber pool of reading light. Rain tattoos against Georgian windows while the radiator fights the eternal battle against British chill. Words flow like Thames current, carrying consciousness downstream through fictional lives. The heart settles into the rhythm of paragraph breaks. Night reading is a ritual of solitude, each book a small rebellion against the coming dawn.",
+                devices: [
+                    { name: "Reading Light", status: "ON - focused beam", location: "Armchair side" },
+                    { name: "Central Heating", status: "17.1°C night setting", location: "Wall thermostat" },
+                    { name: "E-reader", status: "45MB content sync", location: "Reading area" },
+                    { name: "Pulse Monitor", status: "69 bpm steady", location: "Wrist band" },
+                    { name: "Sleep Tracker", status: "6.9h average quality", location: "Bedside sensor" },
+                    { name: "WiFi Extender", status: "2 devices connected", location: "Hallway" }
+                ],
+                floorplan: {
+                    sensors: [
+                        { name: "READ_LIGHT", x: "85%", y: "45%", room: "living" },
+                        { name: "THERMOSTAT", x: "50%", y: "10%", room: "bedroom" },
+                        { name: "E_READER", x: "90%", y: "50%", room: "living" },
+                        { name: "SLEEP_TRACK", x: "30%", y: "35%", room: "bedroom" },
+                        { name: "WIFI_EXT", x: "95%", y: "5%", room: "living" },
+                        { name: "SOUND_SENS", x: "15%", y: "85%", room: "kitchen" }
+                    ]
+                }
+            }
+        ];
+
+        let currentRoom = null;
+
+        function createRoomElement(room, index) {
+            const isYourRoom = index === 0;
+            return `
+                <div class="room ${isYourRoom ? 'your-room' : ''}" onclick="openRoomModal('${room.id}')">
+                    <div class="room-header">
+                        <span class="room-id">${room.id}${isYourRoom ? ' (YOU)' : ''}</span>
+                        <span class="room-location">${room.location} • ${room.time}</span>
+                    </div>
+                    <div class="data-streams">
+                        <div class="data-item">
+                            <span class="data-label">SLEEP:</span>
+                            <span class="data-value ${room.sleep.startsWith('4') || room.sleep.startsWith('5') ? 'blinking' : ''}">${room.sleep}</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">SKIN_TEMP:</span>
+                            <span class="data-value">${room.skinTemp}</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">HEART_RATE:</span>
+                            <span class="data-value ${parseInt(room.heartRate) > 80 ? 'blinking' : ''}">${room.heartRate}</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">LIGHTS:</span>
+                            <span class="data-value">${room.lights}</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">ROOM_TEMP:</span>
+                            <span class="data-value">${room.roomTemp}</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">NETWORK:</span>
+                            <span class="data-value">${room.wifi} • ${room.traffic}</span>
+                        </div>
+                    </div>
+                    <div class="consciousness-stream">
+                        ${room.consciousness}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRooms() {
+            const grid = document.getElementById('roomsGrid');
+            grid.innerHTML = rooms.map((room, index) => createRoomElement(room, index)).join('');
+        }
+
+        function openRoomModal(roomId) {
+            const room = rooms.find(r => r.id === roomId);
+            if (!room) return;
+
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="room-header">
+                    <span class="room-id">${room.id}</span>
+                    <span class="room-location">${room.location} • ${room.time}</span>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div style="color: #00ff41; margin-bottom: 10px;">CONSCIOUSNESS STREAM:</div>
+                    <div class="consciousness-stream" style="max-height: none;">
+                        ${room.consciousness}
+                    </div>
+                </div>
+
+                <div class="floorplan">
+                    <div class="floorplan-title">ROOM FLOORPLAN & SENSOR LAYOUT</div>
+                    <div class="room-layout">
+                        <div class="room-section bedroom">
+                            <div class="room-section-label">Bedroom</div>
+                        </div>
+                        <div class="room-section living">
+                            <div class="room-section-label">Living</div>
+                        </div>
+                        <div class="room-section kitchen">
+                            <div class="room-section-label">Kitchen</div>
+                        </div>
+                        <div class="room-section bathroom">
+                            <div class="room-section-label">Bathroom</div>
+                        </div>
+                        ${room.floorplan.sensors.map(sensor => `
+                            <div class="sensor-dot" 
+                                 style="left: ${sensor.x}; top: ${sensor.y};" 
+                                 data-sensor="${sensor.name}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="legend">
+                        ${room.floorplan.sensors.map(sensor => `
+                            <div class="legend-item">
+                                <div class="legend-dot"></div>
+                                <span>${sensor.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="room-map">
+                    <div class="map-title">DEVICE STATUS DETAILS</div>
+                    <div class="device-grid">
+                        ${room.devices.map(device => `
+                            <div class="device">
+                                <div class="device-name">${device.name}</div>
+                                <div class="device-status">${device.status}</div>
+                                <div class="device-status">Location: ${device.location}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('roomModal').style.display = 'block';
+        }        
+
+        function closeModal() {
+            document.getElementById('roomModal').style.display = 'none';
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('roomModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        renderRooms();
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update random room data occasionally
+            if (Math.random() < 0.3) {
+                const roomIndex = Math.floor(Math.random() * rooms.length);
+                const room = rooms[roomIndex];
+                
+                // Randomly update heart rate
+                const currentHR = parseInt(room.heartRate);
+                const newHR = Math.max(50, Math.min(100, currentHR + (Math.random() - 0.5) * 10));
+                room.heartRate = Math.round(newHR) + " bpm";
+
+                renderRooms();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

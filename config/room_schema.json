@@ -1,0 +1,152 @@
+{
+  "room_variables": {
+    "location": {
+      "type": "string",
+      "description": "Geographic location of the room",
+      "examples": [
+        "Neo Tokyo, Japan", "Cyber London, UK", "Digital Berlin, Germany", 
+        "Neural NYC, USA", "Quantum Sydney, Australia", "Data Toronto, Canada",
+        "Virtual Amsterdam, Netherlands", "AI Seoul, South Korea", "Bot Stockholm, Sweden",
+        "Cloud Singapore", "Matrix Paris, France", "Pixel Mumbai, India"
+      ],
+      "default": "Digital City, Earth"
+    },
+    "time": {
+      "type": "string",
+      "description": "Current time in HH:MM format",
+      "format": "time",
+      "default": "auto"
+    },
+    "sleep": {
+      "type": "string",
+      "description": "Sleep duration with unit",
+      "format": "duration",
+      "range": {
+        "min": 3.0,
+        "max": 9.0
+      },
+      "unit": "h",
+      "default": "7.2h"
+    },
+    "skinTemp": {
+      "type": "string",
+      "description": "Skin temperature reading",
+      "format": "temperature",
+      "range": {
+        "min": 32.0,
+        "max": 37.0
+      },
+      "unit": "°C",
+      "default": "36.1°C"
+    },
+    "heartRate": {
+      "type": "string",
+      "description": "Heart rate in beats per minute",
+      "format": "rate",
+      "range": {
+        "min": 55,
+        "max": 95
+      },
+      "unit": " bpm",
+      "default": "72 bpm"
+    },
+    "lights": {
+      "type": "string",
+      "description": "Lighting system status",
+      "options": [
+        "desk_lamp", "overhead", "kitchen", "bedside", "ambient", "bathroom", 
+        "none", "ceiling", "natural", "candlelight", "neon", "led_strips"
+      ],
+      "default": "ambient"
+    },
+    "roomTemp": {
+      "type": "string",
+      "description": "Room temperature",
+      "format": "temperature",
+      "range": {
+        "min": 18.0,
+        "max": 26.0
+      },
+      "unit": "°C",
+      "default": "21.5°C"
+    },
+    "wifi": {
+      "type": "string",
+      "description": "Network device count",
+      "format": "count",
+      "range": {
+        "min": 1,
+        "max": 5
+      },
+      "unit": " devices",
+      "default": "3 devices"
+    },
+    "traffic": {
+      "type": "string",
+      "description": "Network traffic with activity",
+      "format": "traffic",
+      "activities": [
+        "streaming", "gaming", "browsing", "video", "social", "work", 
+        "downloads", "music", "calls", "coding", "reading", "research"
+      ],
+      "data_range": {
+        "min": 5,
+        "max": 400
+      },
+      "unit": "MB",
+      "default": "89MB (browsing)"
+    }
+  },
+  "consciousness_templates": [
+    "The blue light flickers against tired eyes. Coffee grows cold on the desk while code compiles in the background. Outside, the city hums its midnight frequency. Focus wavers between debugging and dreams of electric sheep. The cursor blinks in rhythm with a restless heart, marking time in an endless digital night.",
+    "Anxiety buzzes like fluorescent lights overhead. The kitchen timer counts down to something forgotten. Notifications cascade across multiple screens, each demanding attention, fracturing focus into scattered pixels. Heart races with urban electricity. The radiator clanks irregular rhythms while thoughts spiral between deadlines and dinner plans.",
+    "Sunlight streams through gauze curtains, painting geometric shadows on wooden floors. The morning stretches languid and unhurried. Coffee steams beside an open book, words dissolving into daydreams. The garden outside whispers of spring growth and renewal. Heart beats steady and content, synchronized with the distant rhythm of trams.",
+    "The digital battlefield glows in peripheral vision while consciousness drifts between virtual worlds and physical fatigue. Controller warm in sweaty palms, heart synced to action sequences. The radiator ticks its mechanical metronome against the cold night. Reality blurs at the edges where screen light meets darkness.",
+    "Warm air carries the scent of jasmine through open windows. The city's nocturnal symphony builds outside - distant music, conversations, the eternal dance of urban life. Skin glistens with evening heat as ceiling fans stir memories and humidity in equal measure. The bathroom light creates a pool of privacy in the apartment's flowing spaces."
+  ],
+  "device_templates": [
+    {
+      "name": "Desk Lamp",
+      "status_options": ["ON - 45% brightness", "ON - 100% brightness", "ON - dim setting", "OFF - motion detection"],
+      "locations": ["NE corner", "Desk area", "Bedside table", "Work surface"]
+    },
+    {
+      "name": "Temperature Sensor", 
+      "status_options": ["21.5°C stable", "24.1°C optimal", "18.2°C night mode", "Calibrating temperature"],
+      "locations": ["Center wall", "Wall unit", "Radiator", "Climate control panel"]
+    },
+    {
+      "name": "Heart Rate Monitor",
+      "status_options": ["72 bpm resting", "89 bpm elevated", "78 bpm gaming stress", "61 bpm relaxed"],
+      "locations": ["Wrist device", "Smartwatch", "Chair sensor", "Smart ring"]
+    },
+    {
+      "name": "Sleep Tracker",
+      "status_options": ["6.2h previous night", "8.3h quality sleep", "5.7h fragmented", "4.1h interrupted sleep"],
+      "locations": ["Bedside", "Mattress sensor", "Pillow sensor", "Bed frame"]
+    },
+    {
+      "name": "WiFi Router",
+      "status_options": ["2 connected devices", "3 gaming devices", "1 tablet connected", "4 devices connected"],
+      "locations": ["SW corner", "Entertainment center", "Network layer", "Living room"]
+    },
+    {
+      "name": "Light Sensor",
+      "status_options": ["Natural light detected", "Artificial light active", "Motion activated", "Ambient sensing"],
+      "locations": ["Window", "Ceiling center", "Motion detector", "Light switch"]
+    }
+  ],
+  "sensor_types": [
+    "NEURAL_LINK", "QUANTUM_HUB", "BIO_MONITOR", "DATA_NODE",
+    "CONSCIOUSNESS_TAP", "REALITY_ANCHOR", "DREAM_WEAVER", 
+    "THOUGHT_SCANNER", "EMOTION_DETECTOR", "MEMORY_CORE"
+  ],
+  "room_sections": ["bedroom", "living", "kitchen", "bathroom"],
+  "floorplan_positions": {
+    "min_x": 20,
+    "max_x": 80,
+    "min_y": 20,
+    "max_y": 80,
+    "unit": "%"
+  }
+}
