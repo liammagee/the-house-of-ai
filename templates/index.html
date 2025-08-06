@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The House of AI - Smart House Simulation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header with retrofuturist styling -->
+        <header class="header">
+            <h1 class="title">THE HOUSE OF AI</h1>
+            <div class="user-stats">
+                <div class="stat">
+                    <span class="label">NEURAL POINTS:</span>
+                    <span class="value" id="points">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">CONSCIOUSNESS LEVEL:</span>
+                    <span class="value" id="level">1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main simulation area -->
+        <main class="simulation-container">
+            <canvas id="houseCanvas" width="1200" height="800"></canvas>
+            
+            <!-- UI Overlay -->
+            <div class="ui-overlay">
+                <div class="room-info" id="roomInfo">
+                    <h3 id="roomName">Living Room</h3>
+                    <p id="roomDescription">A warm, inviting space that seems to pulse with digital consciousness.</p>
+                </div>
+                
+                <div class="action-panel">
+                    <div class="action-hint" id="actionHint">👆 Try clicking EXPLORE to start!</div>
+                    <div class="action-buttons">
+                        <button class="action-btn pulse" id="exploreBtn">EXPLORE</button>
+                        <button class="action-btn" id="interactBtn">INTERACT</button>
+                        <button class="action-btn" id="meditateBtn">MEDITATE</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- AI Response Panel -->
+        <aside class="ai-panel">
+            <div class="ai-header">
+                <h3>HOUSE CONSCIOUSNESS</h3>
+                <div class="ai-status active" id="aiStatus">ACTIVE</div>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message">
+                    Welcome to your digital sanctuary. I am learning about you...
+                </div>
+            </div>
+        </aside>
+
+        <!-- Achievement Notifications -->
+        <div class="achievement-popup" id="achievementPopup">
+            <div class="achievement-content">
+                <h4>ACHIEVEMENT UNLOCKED</h4>
+                <p id="achievementText"></p>
+            </div>
+        </div>
+
+        <!-- Help Button -->
+        <button class="help-button" id="helpButton" title="Show Instructions">?</button>
+
+        <!-- Instructions Panel -->
+        <div class="instructions-panel hidden" id="instructionsPanel">
+            <h3>How to Explore Your AI House</h3>
+            <div class="instructions-grid">
+                <div class="instruction-item">
+                    <h4>Movement</h4>
+                    <p>Click anywhere on the canvas to move your avatar (cyan circle). Use WASD or arrow keys for keyboard control.</p>
+                </div>
+                <div class="instruction-item">
+                    <h4>Room Exploration</h4>
+                    <p>Click on different colored room areas to enter them. Each room has unique personality traits and consciousness levels.</p>
+                </div>
+                <div class="instruction-item">
+                    <h4>Object Interaction</h4>
+                    <p>Click on glowing objects or press 'E' near them to interact. Objects evolve based on your interaction patterns.</p>
+                </div>
+                <div class="instruction-item">
+                    <h4>Action Buttons</h4>
+                    <p>Use EXPLORE, INTERACT, and MEDITATE buttons to perform specific activities that teach the AI about you.</p>
+                </div>
+                <div class="instruction-item">
+                    <h4>Consciousness System</h4>
+                    <p>Your actions increase Neural Points and Consciousness Level. Higher levels unlock new areas and behaviors.</p>
+                </div>
+                <div class="instruction-item">
+                    <h4>AI Learning</h4>
+                    <p>The AI consciousness learns your patterns and adapts the house to reflect your unconscious mind and preferences.</p>
+                </div>
+            </div>
+            <button class="close-instructions" id="closeInstructions">Got It!</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/house-simulation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tutorial.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
