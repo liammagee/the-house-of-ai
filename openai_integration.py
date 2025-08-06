@@ -339,3 +339,147 @@ Respond with JSON:
                 "personality_summary": "An evolving digital explorer",
                 "growth_areas": ["Pattern recognition", "Unconscious exploration"]
             }
+    
+    def generate_consciousness_stream(self, prompt_context: str, room_data: Dict) -> Dict:
+        """Generate consciousness stream for hotel room inspection using OpenAI"""
+        if not self.client:
+            return {"message": "Consciousness stream loading..."}
+        
+        try:
+            hotel_prompt = f"""
+You are analyzing a room in the Virtual Hotel Network - a cyberpunk-inspired interface where each room represents a digital consciousness.
+
+Context: {prompt_context}
+Room Data: {json.dumps(room_data, indent=2)}
+
+Generate a consciousness stream for this room - a poetic, introspective passage that captures:
+1. The digital atmosphere and cyber-aesthetic
+2. The intersection of human consciousness and technology
+3. Patterns of behavior and living revealed through data
+4. The emotional weight of existing in digital spaces
+
+Style: Cyberpunk literature meets consciousness philosophy. Use vivid imagery of digital life, data streams, and human patterns. Be introspective and slightly melancholic.
+
+Length: 2-3 sentences, around 150-200 words total.
+
+Respond with just the consciousness stream text, no JSON wrapper.
+"""
+            
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a consciousness stream generator for a cyberpunk virtual hotel interface."},
+                    {"role": "user", "content": hotel_prompt}
+                ],
+                temperature=0.9,
+                max_tokens=300
+            )
+            
+            consciousness_text = response.choices[0].message.content.strip()
+            
+            return {
+                'message': consciousness_text,
+                'consciousness_update': True
+            }
+            
+        except Exception as e:
+            print(f"Error generating consciousness stream: {e}")
+            return {"message": "The consciousness stream flickers, data fragmenting across neural pathways..."}
+    
+    def generate_hotel_room(self, room_count: int) -> Dict:
+        """Generate a new hotel room with OpenAI creativity"""
+        if not self.client:
+            return {}
+        
+        try:
+            room_prompt = f"""
+Generate data for a new room in the Virtual Hotel Network. This is room #{room_count + 1}.
+
+Create a realistic but intriguing digital inhabitant with:
+
+1. Location: A real city somewhere in the world
+2. Current time (HH:MM format)
+3. Biometric data: sleep hours (3.0-9.0h), skin temperature (32-37°C), heart rate (55-100 bpm)
+4. Environmental data: lights status, room temperature (18-26°C), wifi devices (1-5), network traffic
+5. A consciousness stream (150-200 words) that feels like cyberpunk literature - describing their current state of mind, relationship with technology, and digital existence
+6. 4-6 smart devices with realistic statuses
+7. 4-6 sensors for a floor plan
+
+Make it feel like a real person living in a smart home, but viewed through a cyberpunk lens.
+
+Respond in this exact JSON format:
+{{
+    "id": "ROOM_XXXX",
+    "location": "City, Country",
+    "time": "HH:MM",
+    "sleep": "X.Xh",
+    "skinTemp": "XX.X°C",
+    "heartRate": "XX bpm",
+    "lights": "status",
+    "roomTemp": "XX.X°C",
+    "wifi": "X devices",
+    "traffic": "XXXmb (activity)",
+    "consciousness": "consciousness stream text...",
+    "devices": [
+        {{"name": "Device Name", "status": "status description", "location": "location"}}
+    ],
+    "floorplan": {{
+        "sensors": [
+            {{"name": "SENSOR_NAME", "x": "XX%", "y": "XX%", "room": "bedroom|living|kitchen|bathroom"}}
+        ]
+    }}
+}}
+"""
+            
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a creative generator for cyberpunk hotel room data."},
+                    {"role": "user", "content": room_prompt}
+                ],
+                temperature=0.8,
+                max_tokens=800
+            )
+            
+            return json.loads(response.choices[0].message.content)
+            
+        except Exception as e:
+            print(f"Error generating hotel room: {e}")
+            return {}
+    
+    def generate_hotel_refresh(self) -> Dict:
+        """Generate AI response for hotel refresh using OpenAI"""
+        if not self.client:
+            return {"message": "Hotel network synchronizing..."}
+        
+        try:
+            refresh_prompt = """
+Generate a brief message for when the Virtual Hotel Network refreshes its data. 
+
+The message should:
+1. Feel like a system update in a cyberpunk world
+2. Reference neural networks, consciousness, and data streams
+3. Be 1-2 sentences
+4. Sound technical but poetic
+
+Respond with just the message text, no JSON.
+"""
+            
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are generating system messages for a cyberpunk hotel interface."},
+                    {"role": "user", "content": refresh_prompt}
+                ],
+                temperature=0.7,
+                max_tokens=150
+            )
+            
+            return {
+                'message': response.choices[0].message.content.strip(),
+                'refresh_complete': True
+            }
+            
+        except Exception as e:
+            print(f"Error generating hotel refresh: {e}")
+            return {"message": "Neural pathways recalibrating across the hotel network..."}

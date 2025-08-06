@@ -55,24 +55,23 @@ python app.py
 - **Database** (`house_data.db`) - SQLite database storing user interactions and house state
 
 ### Frontend Components
-- **HTML/CSS** - Retrofuturist UI with neon colors and cyber aesthetics
-- **Canvas Simulation** (`house-simulation.js`) - 2D rendering and user interaction handling
-- **Game Logic** (`game.js`) - Gamification, achievements, and visual effects
-- **App Controller** (`app.js`) - WebSocket communication and UI state management
+- **Hotel Interface** (`hotel.html`) - Terminal-style interface with green text and cyberpunk aesthetics
+- **Hotel Controller** (`hotel.js`) - WebSocket communication and hotel room management
+- **AI Panel** - Toggleable bottom panel for AI interactions and responses
 
 ### Key Features
 - **Real-time Communication**: WebSocket-based bidirectional communication between frontend and backend
 - **AI Pattern Recognition**: Analyzes user behavior to infer unconscious patterns and motivations
-- **Dynamic House Evolution**: House architecture and objects evolve based on user interactions
-- **Gamification**: Points, achievements, and consciousness levels provide progression feedback
-- **Unconscious Modeling**: AI agent builds a model of user's unconscious desires and adapts accordingly
+- **Dynamic Hotel Rooms**: AI-generated hotel rooms with unique personalities and evolving characteristics
+- **Terminal Interface**: Retro terminal-style UI with cyberpunk aesthetics
+- **AI Interaction Panel**: Toggleable panel for real-time AI conversations and responses
 
-### Room System
-Each room has:
-- Consciousness levels that evolve with interaction
-- Personality traits that influence AI responses
-- Interactive objects with their own evolution potential
-- Visual effects that respond to user patterns
+### Hotel Room System
+Each AI-generated room has:
+- Unique personality traits and characteristics
+- Dynamic descriptions that evolve based on interactions
+- Device configurations and smart home elements
+- Consciousness levels that adapt to user patterns
 
 ### AI Agent Behavior
 - **Pattern Analysis**: Tracks room preferences, action frequencies, and temporal patterns
@@ -93,14 +92,10 @@ Each room has:
 ├── house_simulation.py   # Backend house state management
 ├── requirements.txt      # Python dependencies
 ├── templates/
-│   └── index.html       # Main application template
+│   └── hotel.html       # Terminal-style hotel interface
 └── static/
-    ├── css/
-    │   └── style.css    # Retrofuturist styling
     └── js/
-        ├── app.js       # Main application controller
-        ├── house-simulation.js  # 2D canvas simulation
-        └── game.js      # Game mechanics and utilities
+        └── hotel.js     # Hotel interface controller and AI panel management
 ```
 
 ## Development Notes

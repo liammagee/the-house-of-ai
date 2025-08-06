@@ -1,0 +1,82 @@
+{
+  "templates": {
+    "cyberpunk_standard": {
+      "name": "Cyberpunk Standard Room",
+      "description": "Standard cyberpunk hotel room with neural interfaces",
+      "variables": {
+        "location": "random",
+        "lights": ["neon", "holographic", "laser"],
+        "sleep": {"min": 6.0, "max": 8.5},
+        "skinTemp": {"min": 35.5, "max": 37.0},
+        "heartRate": {"min": 60, "max": 85},
+        "roomTemp": {"min": 20.0, "max": 24.0},
+        "wifi": {"min": 2, "max": 4},
+        "traffic": {"min": 100, "max": 400}
+      },
+      "devices": [
+        {"template": "Neural Interface", "required": true},
+        {"template": "Biometric Scanner", "required": true},
+        {"template": "Quantum Router", "required": false},
+        {"template": "Consciousness Monitor", "required": false}
+      ],
+      "consciousness_style": "cyberpunk_tech"
+    },
+    "neural_enhanced": {
+      "name": "Neural Enhancement Suite",
+      "description": "Advanced room with consciousness monitoring",
+      "variables": {
+        "location": "random",
+        "lights": ["plasma", "bioluminescent", "quantum"],
+        "sleep": {"min": 7.0, "max": 9.0},
+        "skinTemp": {"min": 36.0, "max": 37.2},
+        "heartRate": {"min": 65, "max": 90},
+        "roomTemp": {"min": 19.0, "max": 23.0},
+        "wifi": {"min": 3, "max": 5},
+        "traffic": {"min": 200, "max": 500}
+      },
+      "devices": [
+        {"template": "Neural Interface", "required": true},
+        {"template": "Consciousness Monitor", "required": true},
+        {"template": "Dream Synthesizer", "required": true},
+        {"template": "Reality Anchor", "required": false}
+      ],
+      "consciousness_style": "enhanced_awareness"
+    },
+    "basic_digital": {
+      "name": "Basic Digital Room",
+      "description": "Entry-level digital accommodation",
+      "variables": {
+        "location": "random",
+        "lights": ["ambient", "neon"],
+        "sleep": {"min": 5.0, "max": 7.5},
+        "skinTemp": {"min": 34.0, "max": 36.5},
+        "heartRate": {"min": 55, "max": 80},
+        "roomTemp": {"min": 18.0, "max": 25.0},
+        "wifi": {"min": 1, "max": 3},
+        "traffic": {"min": 50, "max": 250}
+      },
+      "devices": [
+        {"template": "Biometric Scanner", "required": true},
+        {"template": "Quantum Router", "required": true}
+      ],
+      "consciousness_style": "basic_digital"
+    }
+  },
+  "consciousness_styles": {
+    "cyberpunk_tech": [
+      "Neon circuits pulse beneath synthetic skin while data streams cascade through neural networks. The room breathes with electric life, every surface alive with digital consciousness seeking connection.",
+      "Chrome and flesh merge in perfect synthesis as quantum processors parse human emotions into machine code. Reality bends at the edges where wetware meets silicon dreams.",
+      "Electric synapses fire in harmony with organic neurons, creating hybrid thoughts that exist simultaneously in meat and metal. The boundary between self and system dissolves."
+    ],
+    "enhanced_awareness": [
+      "Consciousness expands beyond biological limits as neural enhancers amplify awareness to cosmic scales. Every thought ripples through quantum foam, touching infinite possibilities.",
+      "The room exists in superposition - simultaneously shelter and universe, particle and wave. Enhanced perception reveals hidden dimensions folded within familiar space.",
+      "Reality layers cascade through consciousness like infinite mirrors reflecting deeper truths. The enhanced mind perceives patterns invisible to unaugmented awareness."
+    ],
+    "basic_digital": [
+      "Digital interfaces hum quietly in the background, learning patterns and adapting to presence. Simple sensors track basic metrics while the room slowly awakens.",
+      "Basic neural connections establish handshake protocols between organic and digital systems. The foundation of hybrid consciousness takes root in silicon soil.",
+      "Elementary AI processes observe and catalog behaviors, building the first layers of understanding between human and machine intelligence."
+    ]
+  }
+}
