@@ -14,7 +14,6 @@ class HotelInterface {
     init() {
         this.connectWebSocket();
         this.bindEventListeners();
-        this.loadPersistedRooms();
         this.startPeriodicUpdates();
     }
 
@@ -27,8 +26,8 @@ class HotelInterface {
             this.updateConnectionStatus('Connected', 'ACTIVE');
             this.connectionRetries = 0;
             
-            // Request initial AI-generated room
-            this.requestAIRoomGeneration();
+            // Load persisted rooms first
+            this.loadPersistedRooms();
         });
 
         this.socket.on('disconnect', () => {
