@@ -19,8 +19,18 @@ if os.getenv('OPENAI_API_KEY'):
     print(f"   OPENAI_API_KEY length: {len(os.getenv('OPENAI_API_KEY'))} characters")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
+
+# Fly.io WebSocket configuration
+socketio = SocketIO(
+    app, 
+    cors_allowed_origins="*",
+    async_mode='threading',
+    logger=True,
+    engineio_logger=True,
+    ping_timeout=60,
+    ping_interval=25
+)
 
 # Initialize core systems
 print("🧠 Initializing AI Agent...")
@@ -349,4 +359,9 @@ def load_hotel_rooms():
  
 if __name__ == '__main__':
     init_db()
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    # Use PORT environment variable for Fly.io
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    
+    print(f"🚀 Starting server on port {port} (debug: {debug_mode})")
+    socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port)

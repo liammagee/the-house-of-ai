@@ -19,7 +19,13 @@ class HotelInterface {
 
     connectWebSocket() {
         console.log('🔌 Connecting to WebSocket...');
-        this.socket = io();
+        this.socket = io({
+            transports: ['websocket', 'polling'],
+            upgrade: true,
+            rememberUpgrade: true,
+            timeout: 20000,
+            forceNew: true
+        });
         
         this.socket.on('connect', () => {
             console.log('✅ Connected to server');
