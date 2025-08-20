@@ -109,7 +109,7 @@ class AIProviderFactory:
         if os.getenv('OPENAI_API_KEY'):
             config.update({
                 'openai_api_key': os.getenv('OPENAI_API_KEY'),
-                'openai_model': os.getenv('OPENAI_MODEL', 'gpt-4'),
+                'openai_model': os.getenv('OPENAI_MODEL', 'gpt-5'),
                 'openai_base_url': os.getenv('OPENAI_BASE_URL'),  # For custom endpoints
             })
         
@@ -240,7 +240,7 @@ class AIProviderFactory:
         if provider_type == AIProviderType.OPENAI:
             provider_config = {
                 'api_key': config.get('openai_api_key'),
-                'model': config.get('openai_model', 'gpt-4'),
+                'model': config.get('openai_model', 'gpt-5'),
                 'base_url': config.get('openai_base_url'),
             }
         elif provider_type == AIProviderType.GROQ:

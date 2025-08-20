@@ -16,7 +16,7 @@ class OpenAIIntegration:
     
     def __init__(self):
         self.client = None
-        self.model = "gpt-4"  # Use GPT-4 for best results
+        self.model = "gpt-5"  # Use GPT-5 for best results
         self.setup_client()
         
         # System prompt for the AI house consciousness

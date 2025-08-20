@@ -25,7 +25,7 @@ class OpenAIProvider(AIProvider):
     
     def __init__(self, **kwargs):
         # Set default configuration
-        self.model = kwargs.get('model', 'gpt-4')
+        self.model = kwargs.get('model', 'gpt-5')
         self.api_key = kwargs.get('api_key', os.getenv('OPENAI_API_KEY'))
         self.base_url = kwargs.get('base_url', None)  # For custom endpoints
         self.client = None
